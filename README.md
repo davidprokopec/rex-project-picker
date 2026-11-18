@@ -76,6 +76,7 @@ rex.bind("cmd+shift+k", "rex_project_picker")
 - Filesystem root `/` is not offered as a project.
 - History paths containing newlines are not supported.
 - History commands may refresh their own caches, just as when run directly.
+- GUI-started servers often have a minimal `PATH`. For history discovery, the plugin also searches `/opt/homebrew/bin`, `/usr/local/bin`, `~/.local/bin`, and `~/.cargo/bin`.
 
 ## Development
 

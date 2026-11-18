@@ -6,6 +6,7 @@ sessions, history = {}, nil
 queued, creates, logs, prompts = {}, {}, {}, {}
 local cwd_arg
 local list_calls, listed_work_dirs, resolve_args = 0, {}, {}
+local history_env
 
 rex = {
   action = function(spec) action = spec end,
@@ -13,8 +14,9 @@ rex = {
     if key ~= "ctrl+space>f" then return end
     assert(name == "rex_project_picker")
   end,
-  exec = function(argv)
+  exec = function(argv, options)
     if argv[1] == "sh" and argv[3]:find("history()", 1, true) then
+      history_env = options and options.env
       list_calls = list_calls + 1
       listed_work_dirs[#listed_work_dirs + 1] = argv[5]
       local output = history or ""
@@ -73,6 +75,9 @@ assert(rows[1].subtitle == "Open session" and rows[1].id ~= rows[2].id)
 assert(rows[3].subtitle == "/history first" and rows[4].subtitle == "/history second")
 assert(rows[5].subtitle == "/work")
 assert(list_calls == 1 and listed_work_dirs[1] == "/work")
+assert(history_env and history_env.PATH:find("/opt/homebrew/bin", 1, true))
+assert(history_env.PATH:find("/usr/local/bin", 1, true))
+assert(history_env.PATH:find((os.getenv("HOME") or "") .. "/.local/bin", 1, true))
 answers = { "folder:/history first" }
 action.run({ session_id = "none" })
 assert(cwd_arg == "/history first" and creates[1].label == "history first")

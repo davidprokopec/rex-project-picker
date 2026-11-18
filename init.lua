@@ -33,7 +33,14 @@ printf '%s\n' "$canonical"
 ]]
 
 local function run(argv)
-  local result = rex.exec(argv)
+  -- A server started by the GUI can inherit only macOS's system PATH.
+  local home = os.getenv("HOME") or ""
+  local path = table.concat({
+    os.getenv("PATH") or "/usr/bin:/bin",
+    "/opt/homebrew/bin", "/usr/local/bin",
+    home .. "/.local/bin", home .. "/.cargo/bin",
+  }, ":")
+  local result = rex.exec(argv, { env = { PATH = path } })
   if result and result.ok then return result.stdout end
   return nil
 end
